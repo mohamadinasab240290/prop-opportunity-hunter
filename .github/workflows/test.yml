@@ -1,5 +1,5 @@
 name: Test Run
-on:
+"on":
   workflow_dispatch:
 jobs:
   test:
