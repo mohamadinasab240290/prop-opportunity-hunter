@@ -1,13 +1,18 @@
-name: Telegram Debug
+name: FINAL TELEGRAM TEST 12345
+
 on:
   workflow_dispatch:
+
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Debug Telegram
+      - name: STEP CHECK
+        run: echo "WORKFLOW IS RUNNING"
+
+      - name: Send Telegram
         run: |
-          echo "START"
           curl -v "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
           -d "chat_id=${{ secrets.CHAT_ID }}" \
-          -d "text=TEST FROM GITHUB"
+          -d "text=FINAL TEST FROM GITHUB"
