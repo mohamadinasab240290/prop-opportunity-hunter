@@ -1,12 +1,13 @@
-name: Telegram Test
+name: Telegram Debug
 on:
   workflow_dispatch:
 jobs:
-  send-message:
+  test:
     runs-on: ubuntu-latest
     steps:
-      - name: Send Telegram message
+      - name: Debug Telegram
         run: |
-          curl -s "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
+          echo "Sending request..."
+          curl -v "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
           -d "chat_id=${{ secrets.CHAT_ID }}" \
-          -d "text=🚀 Prop Opportunity Hunter is connected!"
+          -d "text=TEST MESSAGE"
