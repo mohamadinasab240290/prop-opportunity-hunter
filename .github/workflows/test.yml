@@ -1,4 +1,4 @@
-name: FINAL TELEGRAM TEST 12345
+name: FORCE RUN 777
 
 on:
   workflow_dispatch:
@@ -8,11 +8,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: STEP CHECK
-        run: echo "WORKFLOW IS RUNNING"
+      - name: STEP 1
+        run: echo "STEP IS RUNNING"
 
-      - name: Send Telegram
+      - name: STEP 2
+        run: echo "SECOND STEP"
+
+      - name: TELEGRAM TEST
         run: |
-          curl -v "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
-          -d "chat_id=${{ secrets.CHAT_ID }}" \
-          -d "text=FINAL TEST FROM GITHUB"
+          echo "TRYING TELEGRAM"
