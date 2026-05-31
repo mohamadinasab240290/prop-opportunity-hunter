@@ -1,4 +1,21 @@
-- name: Check token exists
-  run: |
-    echo "TOKEN LENGTH:"
-    echo ${{ secrets.BOT_TOKEN }} | wc -c
+name: FINAL SECRET CHECK
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check BOT_TOKEN
+        run: |
+          if [ -z "${{ secrets.BOT_TOKEN }}" ]; then
+            echo "BOT_TOKEN is EMPTY ❌"
+          else
+            echo "BOT_TOKEN is OK ✅"
+          fi
+      - name: Check CHAT_ID
+        run: |
+          if [ -z "${{ secrets.CHAT_ID }}" ]; then
+            echo "CHAT_ID is EMPTY ❌"
+          else
+            echo "CHAT_ID is OK ✅"
+          fi
