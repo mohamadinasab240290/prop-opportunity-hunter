@@ -1,16 +1,4 @@
-name: FINAL TELEGRAM CONNECT
-
-on:
-  workflow_dispatch:
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Debug Telegram
-        run: |
-          echo "START TELEGRAM REQUEST"
-          curl -s -v "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
-          -d "chat_id=${{ secrets.CHAT_ID }}" \
-          -d "text=🚀 Prop Opportunity Hunter is LIVE"
+- name: Check token exists
+  run: |
+    echo "TOKEN LENGTH:"
+    echo ${{ secrets.BOT_TOKEN }} | wc -c
