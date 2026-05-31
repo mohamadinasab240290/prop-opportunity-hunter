@@ -1,16 +1,12 @@
-name: Telegram HARD TEST
+name: Telegram Final Test
 on:
   workflow_dispatch:
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Show debug info
+      - name: Send Telegram Message
         run: |
-          echo "TOKEN EXISTS: ${{ secrets.BOT_TOKEN != '' }}"
-          echo "CHAT EXISTS: ${{ secrets.CHAT_ID != '' }}"
-      - name: Send message
-        run: |
-          curl -v "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
+          curl -s "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
           -d "chat_id=${{ secrets.CHAT_ID }}" \
-          -d "text=TEST FROM GITHUB FINAL"
+          -d "text=🚀 اتصال موفق شد! Prop Opportunity Hunter آماده است."
