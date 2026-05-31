@@ -7,7 +7,7 @@ jobs:
     steps:
       - name: Debug Telegram
         run: |
-          echo "Sending request..."
+          echo "START"
           curl -v "https://api.telegram.org/bot${{ secrets.BOT_TOKEN }}/sendMessage" \
           -d "chat_id=${{ secrets.CHAT_ID }}" \
-          -d "text=TEST MESSAGE"
+          -d "text=TEST FROM GITHUB"
