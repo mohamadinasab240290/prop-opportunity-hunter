@@ -1,15 +1,11 @@
-1"}
-name: Daily Report
-
+name: Daily Repor
 on:
   schedule:
     - cron: '0 8 * * *'
   workflow_dispatch:
-
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Send test message
         run: |
