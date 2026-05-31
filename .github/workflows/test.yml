@@ -1,4 +1,4 @@
-name: Check token exists
+- name: Check token exists
   run: |
     echo "TOKEN LENGTH:"
     echo ${{ secrets.BOT_TOKEN }} | wc -c
