@@ -9,9 +9,21 @@ btc = yf.Ticker("BTC-USD")
 btc_price = btc.history(period="1d").tail(1)["Close"].iloc[0]
 eth = yf.Ticker("ETH-USD")
 eth_price = eth.history(period="1d").tail(1)["Close"].iloc[0]
+gold = yf.Ticker("GC=F")
+gold_price = gold.history(period="1d").tail(1)["Close"].iloc[0]
+apple = yf.Ticker("AAPL")
+apple_price = apple.history(period="1d").tail(1)["Close"].iloc[0]
+tesla = yf.Ticker("TSLA")
+tesla_price = tesla.history(period="1d").tail(1)["Close"].iloc[0]
+oil = yf.Ticker("CL=F")
+oil_price = oil.history(period="1d").tail(1)["Close"].iloc[0]
 message += "📊 LIVE MARKETS\n\n"
 message += f"₿ BTCUSD: ${btc_price:,.2f}\n"
-message += f"⟠ ETHUSD: ${eth_price:,.2f}\n\n"
+message += f"⟠ ETHUSD: ${eth_price:,.2f}\n"
+message += f"🥇 GOLD: ${gold_price:,.2f}\n"
+message += f"🍎 APPLE: ${apple_price:,.2f}\n"
+message += f"🚗 TESLA: ${tesla_price:,.2f}\n"
+message += f"🛢 OIL: ${oil_price:,.2f}\n\n"
 # PROP OPPORTUNITIES
 prop_opps = [
     "🏆 Demo Trading Contest - Free Entry Prop Competitions",
