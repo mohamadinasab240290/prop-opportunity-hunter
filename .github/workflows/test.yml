@@ -1,22 +1,18 @@
 name: Third Eye Business
 on:
   schedule:
-    - cron: '30 2,5,8,11,14,17 * * *'
+    - cron: '30 2,5,8,11,14,17,20 * * *'  # معادل 6 تا 23 تهران
   workflow_dispatch:
 jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install Packages
-        run: |
-          pip install requests
-          pip install yfinance
+      - name: Install dependencies
+        run: pip install yfinance requests
       - name: Run Bot
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
