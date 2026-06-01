@@ -15,9 +15,6 @@ assets = {
     "TESLA": "TSLA",
     "APPLE": "AAPL"
 }
-# ------------------------
-# دریافت قیمت‌ها
-# ------------------------
 current_prices = {}
 for name, symbol in assets.items():
     try:
@@ -26,9 +23,7 @@ for name, symbol in assets.items():
         current_prices[name] = float(price)
     except:
         current_prices[name] = 0
-# ------------------------
-# خواندن قیمت قبلی
-# ------------------------
+# load old
 if os.path.exists(DATA_FILE):
     try:
         with open(DATA_FILE, "r") as f:
@@ -37,49 +32,37 @@ if os.path.exists(DATA_FILE):
         old_prices = {}
 else:
     old_prices = {}
-# ------------------------
-# محاسبه تغییرات
-# ------------------------
 changes = {}
 for asset, price in current_prices.items():
-    old_price = old_prices.get(asset, 0)
-    if old_price and old_price != 0:
-        changes[asset] = round(((price - old_price) / old_price) * 100, 2)
+    old = old_prices.get(asset, 0)
+    if old and old != 0:
+        changes[asset] = round(((price - old) / old) * 100, 2)
     else:
         changes[asset] = 0
-# ------------------------
-# ذخیره داده جدید
-# ------------------------
+# save
 os.makedirs("data", exist_ok=True)
-
 with open(DATA_FILE, "w") as f:
     json.dump(current_prices, f)
-# ------------------------
-# تحلیل‌ها
-# ------------------------
+# 🧠 تحلیل حرفه‌ای
 best = max(changes, key=changes.get)
 worst = min(changes, key=changes.get)
-volatility = max(current_prices, key=lambda x: abs(changes[x]))
-# ------------------------
-# پیام تلگرام
-# ------------------------
-message = "👁 Third Eye Business\n\n📊 Professional Market Dashboard\n\n"
+alerts = []
+for k, v in changes.items():
+    if v >= 2:
+        alerts.append(f"🚀 {k} +{v}% Strong Rise")
+    elif v <= -2:
+        alerts.append(f"⚠️ {k} {v}% Sharp Drop")
+# پیام
+message = "👁 Third Eye Business\n\n📊 Smart Market Dashboard\n\n"
 for asset in assets:
-    price = current_prices[asset]
-    change = changes[asset]
-    message += f"{asset}: {price:.2f} ({change:+.2f}%)\n"
-message += "\n🏆 Top Gainer: " + best + f" ({changes[best]:+.2f}%)"
-message += "\n📉 Top Loser: " + worst + f" ({changes[worst]:+.2f}%)"
-message += "\n📊 Most Volatile: " + volatility + f" ({changes[volatility]:+.2f}%)"
-# ------------------------
-# ارسال به تلگرام
-# ------------------------
-telegram_url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    message += f"{asset}: {current_prices[asset]:.2f} ({changes[asset]:+.2f}%)\n"
+message += "\n🏆 Top Gainer: " + best
+message += "\n📉 Top Loser: " + worst
+if alerts:
+    message += "\n\n🔔 Alerts:\n" + "\n".join(alerts)
+# send
 requests.post(
-    telegram_url,
-    data={
-        "chat_id": CHAT_ID,
-        "text": message
-    }
+    f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
+    data={"chat_id": CHAT_ID, "text": message}
 )
 print("DONE")
