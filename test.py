@@ -15,6 +15,7 @@ assets = {
     "TESLA": "TSLA",
     "APPLE": "AAPL"
 }
+# ---------------- DATA ----------------
 current_prices = {}
 for name, symbol in assets.items():
     try:
@@ -23,7 +24,6 @@ for name, symbol in assets.items():
         current_prices[name] = float(price)
     except:
         current_prices[name] = 0
-# load old
 if os.path.exists(DATA_FILE):
     try:
         with open(DATA_FILE, "r") as f:
@@ -33,34 +33,36 @@ if os.path.exists(DATA_FILE):
 else:
     old_prices = {}
 changes = {}
-for asset, price in current_prices.items():
-    old = old_prices.get(asset, 0)
+for k, v in current_prices.items():
+    old = old_prices.get(k, 0)
     if old and old != 0:
-        changes[asset] = round(((price - old) / old) * 100, 2)
+        changes[k] = round(((v - old) / old) * 100, 2)
     else:
-        changes[asset] = 0
-# save
+        changes[k] = 0
 os.makedirs("data", exist_ok=True)
 with open(DATA_FILE, "w") as f:
     json.dump(current_prices, f)
-# 🧠 تحلیل حرفه‌ای
+# ---------------- ANALYSIS ----------------
 best = max(changes, key=changes.get)
 worst = min(changes, key=changes.get)
-alerts = []
-for k, v in changes.items():
-    if v >= 2:
-        alerts.append(f"🚀 {k} +{v}% Strong Rise")
-    elif v <= -2:
-        alerts.append(f"⚠️ {k} {v}% Sharp Drop")
-# پیام
-message = "👁 Third Eye Business\n\n📊 Smart Market Dashboard\n\n"
-for asset in assets:
-    message += f"{asset}: {current_prices[asset]:.2f} ({changes[asset]:+.2f}%)\n"
+# AI Insight (simple but powerful)
+bullish = sum(1 for x in changes.values() if x > 0)
+bearish = sum(1 for x in changes.values() if x < 0)
+if bullish > bearish:
+    sentiment = "🟢 Market is Bullish"
+elif bearish > bullish:
+    sentiment = "🔴 Market is Bearish"
+else:
+    sentiment = "🟡 Market is Neutral"
+# ---------------- MESSAGE ----------------
+message = "👁 Third Eye Business\n\n"
+message += "📊 Global Market Dashboard\n\n"
+for a in assets:
+    message += f"{a}: {current_prices[a]:.2f} ({changes[a]:+.2f}%)\n"
 message += "\n🏆 Top Gainer: " + best
 message += "\n📉 Top Loser: " + worst
-if alerts:
-    message += "\n\n🔔 Alerts:\n" + "\n".join(alerts)
-# send
+message += "\n\n🧠 AI Insight:\n" + sentiment
+# ---------------- SEND ----------------
 requests.post(
     f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
     data={"chat_id": CHAT_ID, "text": message}
