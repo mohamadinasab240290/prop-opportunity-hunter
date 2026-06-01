@@ -1,27 +1,53 @@
+_engine"}
 import requests
 import os
-import yfinance as yf
 import random
-# ================= MESSAGE START =================
-message = "👁 Third Eye Business\n\n"
-message += "🔔 Pro Market Alerts\n\n"
-# ================= LIVE MARKETS =================
-def get_price(ticker):
+# ================= SAFE GET =================
+def safe_get(url):
     try:
-        return yf.Ticker(ticker).history(period="1d")["Close"].iloc[-1]
+        return requests.get(url, timeout=5).json()
     except:
         return None
-btc_price = get_price("BTC-USD")
-eth_price = get_price("ETH-USD")
-gold_price = get_price("GC=F")
-apple_price = get_price("AAPL")
-tesla_price = get_price("TSLA")
-oil_price = get_price("CL=F")
-message += "📊 LIVE MARKETS\n\n"
+# ================= CRYPTO (BINANCE REAL-TIME) =================
+def get_crypto(symbol):
+    data = safe_get(f"https://api.binance.com/api/v3/ticker/price?symbol={symbol}")
+    return float(data["price"]) if data else None
+btc_price = get_crypto("BTCUSDT")
+eth_price = get_crypto("ETHUSDT")
+# ================= FOREX (REAL-TIME API) =================
+fx = safe_get("https://api.exchangerate.host/latest?base=USD")
+eurusd = fx["rates"]["EUR"] if fx else None
+gbpusd = fx["rates"]["GBP"] if fx else None
+usdjpy = fx["rates"]["JPY"] if fx else None
+# ================= STOCKS / GOLD (YFINANCE FALLBACK) =================
+import yfinance as yf
+def get_yf(t):
+    try:
+        return yf.Ticker(t).history(period="1d")["Close"].iloc[-1]
+    except:
+        return None
+gold_price = get_yf("GC=F")
+apple_price = get_yf("AAPL")
+tesla_price = get_yf("TSLA")
+oil_price = get_yf("CL=F")
+# ================= IRAN FX =================
+usd_irr = 820000
+# ================= MESSAGE =================
+message = "👁 Third Eye Business\n\n"
+message += "🔔 REAL-TIME MARKET ENGINE\n\n"
+message += "📊 CRYPTO\n\n"
 if btc_price:
     message += f"₿ BTC: ${btc_price:,.2f}\n"
 if eth_price:
     message += f"⟠ ETH: ${eth_price:,.2f}\n"
+message += "\n💱 FOREX\n\n"
+if eurusd:
+    message += f"💶 EUR/USD: {eurusd:.4f}\n"
+if gbpusd:
+    message += f"💷 GBP/USD: {gbpusd:.4f}\n"
+if usdjpy:
+    message += f"💴 USD/JPY: {usdjpy:.2f}\n"
+message += "\n📈 STOCKS & COMMODITIES\n\n"
 if gold_price:
     message += f"🥇 GOLD: ${gold_price:,.2f}\n"
 if apple_price:
@@ -30,88 +56,52 @@ if tesla_price:
     message += f"🚗 TESLA: ${tesla_price:,.2f}\n"
 if oil_price:
     message += f"🛢 OIL: ${oil_price:,.2f}\n"
-message += "\n"
-# ================= FOREX =================
-eurusd = get_price("EURUSD=X")
-gbpusd = get_price("GBPUSD=X")
-usdjpy = get_price("JPY=X")
-message += "💱 FOREX\n\n"
-if eurusd:
-    message += f"💶 EUR/USD: {eurusd:.4f}\n"
-if gbpusd:
-    message += f"💷 GBP/USD: {gbpusd:.4f}\n"
-if usdjpy:
-    message += f"💴 USD/JPY: {usdjpy:.2f}\n"
-message += "\n"
-# ================= IRAN FX =================
-usd_irr = 820000
-message += "🇮🇷 IRAN FX\n\n"
-message += f"💵 USD/IRR: {usd_irr:,}\n"
+# ================= IRAN MARKET =================
+message += "\n🇮🇷 IRAN MARKET\n\n"
 if gold_price:
-    gold_iran = gold_price * usd_irr
-    message += f"🥇 GOLD IRAN (est): {int(gold_iran):,} IRR\n"
-message += "\n"
+    message += f"🥇 Gold Iran: {int(gold_price * usd_irr):,} IRR\n"
+message += f"💵 USD/IRR: {usd_irr:,}\n"
 # ================= REGIONAL FX =================
-message += "🌍 REGIONAL FX\n\n"
-regional_fx = {
+message += "\n🌍 REGIONAL FX\n\n"
+regional = {
     "🇦🇪 AED": 113000,
     "🇨🇳 CNY": 115000,
     "🇹🇷 TRY": 29000,
     "🇴🇲 OMR": 3800000
 }
-for name, value in regional_fx.items():
-    message += f"{name}: {value:,} IRR\n"
-message += "\n"
-# ================= PROP OPPORTUNITIES =================
-prop_opps = [
-    "🏆 Demo Trading Contest",
-    "💼 Funded Challenge Discounts",
-    "🎁 No Deposit Bonus",
-    "💰 Evaluation Fee Discount",
-    "🚀 Free Funded Account Giveaway"
-]
-message += "💼 PROP OPPORTUNITIES\n\n"
-for opp in prop_opps:
-    message += f"• {opp}\n"
-message += "\n"
-# ================= EXCHANGES =================
-exchanges = ["Binance", "Bybit", "OKX", "KuCoin", "Bitget", "MEXC", "BingX"]
-message += "🏦 EXCHANGES\n\n"
-for ex in exchanges:
-    message += f"• {ex}\n"
-message += "\n"
-# ================= BROKERS =================
-brokers = ["Exness", "XM", "FBS", "RoboForex", "HFM"]
-message += "🏛 BROKERS\n\n"
-for b in brokers:
-    message += f"• {b}\n"
-message += "\n"
-# ================= IRAN PROP WATCHLIST =================
-iran_props = ["PropCheck", "PropKadeh", "PropLogy", "ProopCo", "PropChi"]
-message += "📢 IRAN PROP WATCHLIST\n\n"
-for p in iran_props:
+for k, v in regional.items():
+    message += f"{k}: {v:,} IRR\n"
+# ================= PROP =================
+message += "\n💼 PROP OPPORTUNITIES\n"
+props = ["Demo Contest", "Funded Challenge", "No Deposit Bonus", "Fee Discount", "Free Account Giveaway"]
+for p in props:
     message += f"• {p}\n"
-message += "\n"
-# ================= TODAY OPPORTUNITY =================
-today_opps = [
-    "🎁 Prop Discount Campaign",
+# ================= EXCHANGES =================
+message += "\n🏦 EXCHANGES\n"
+for e in ["Binance","Bybit","OKX","KuCoin","Bitget","MEXC","BingX"]:
+    message += f"• {e}\n"
+# ================= BROKERS =================
+message += "\n🏛 BROKERS\n"
+for b in ["Exness","XM","FBS","RoboForex","HFM"]:
+    message += f"• {b}\n"
+# ================= IRAN PROP =================
+message += "\n📢 IRAN PROP WATCHLIST\n"
+for c in ["PropCheck","PropKadeh","PropLogy","ProopCo","PropChi"]:
+    message += f"• {c}\n"
+# ================= OPPORTUNITY =================
+opps = [
     "🏆 Demo Competition",
     "🚀 Funded Giveaway",
-    "💰 Evaluation Discount",
-    "🎯 Free Challenge",
-    "🔥 Limited Time Prop Event"
+    "💰 Discount Campaign",
+    "🎁 Broker Bonus Event",
+    "🔥 Limited Prop Deal"
 ]
-message += "🔥 TODAY OPPORTUNITY\n\n"
-message += random.choice(today_opps)
-# ================= TELEGRAM =================
+message += "\n🔥 TODAY OPPORTUNITY\n"
+message += random.choice(opps)
+# ================= SEND =================
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
-response = requests.post(
+requests.post(
     f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
-    data={
-        "chat_id": CHAT_ID,
-        "text": message
-    }
+    data={"chat_id": CHAT_ID, "text": message}
 )
-print(response.status_code)
-print(response.text)
