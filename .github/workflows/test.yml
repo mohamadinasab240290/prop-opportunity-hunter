@@ -1,33 +1,24 @@
-import requests
-import os
-import yfinance as yf
-message = "👁 Third Eye Business\n\n"
-message += "🔔 Pro Market Alerts\n\n"
-message += "✅ yfinance loaded successfully\n\n"
-prop_opps = [
-    "🏆 Demo Trading Contest - Free Entry Prop Competitions",
-    "🏆 Monthly Trading Challenges with funded prizes",
-    "💼 FTMO / FundedNext discount campaigns",
-    "🎁 No Deposit Bonus offers",
-    "💰 Evaluation fee discounts",
-    "🚀 Free funded account giveaways"
-]
-message += "💼 PROP OPPORTUNITIES\n"
-for opp in prop_opps:
-    message += f"{opp}\n"
-message += "\n\n🏦 EXCHANGES OVERVIEW\n"
-message += "• Binance 🟢 Active\n"
-message += "• Bybit 🟢 Active\n"
-message += "• OKX 🟢 Active\n"
-message += "• KuCoin 🟢 Active\n"
-BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
-response = requests.post(
-    f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
-    data={
-        "chat_id": CHAT_ID,
-        "text": message
-    }
-)
-print("Status Code:", response.status_code)
-print("Response:", response.text)
+name: Third Eye Business
+on:
+  schedule:
+    - cron: '30 2,5,8,11,14,17,20 * * *'
+  workflow_dispatch:
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Dependencies
+        run: |
+          pip install requests
+          pip install yfinance
+      - name: Run Bot
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python test.py
