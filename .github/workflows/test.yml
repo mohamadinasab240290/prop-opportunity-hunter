@@ -1,5 +1,7 @@
-name: Prop Hunter
+name: Third Eye Business
 on:
+  schedule:
+    - cron: '30 2,5,8,11,14,17 * * *'
   workflow_dispatch:
 jobs:
   run:
@@ -9,10 +11,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install requirements
+      - name: Install packages
         run: pip install requests
-      - name: Run bot
+      - name: Run Bot
         env:
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          CHAT_ID: ${{ secrets.CHAT_ID }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python test.py
