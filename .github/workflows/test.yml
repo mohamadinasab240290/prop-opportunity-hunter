@@ -1,16 +1,13 @@
 steps:
   - name: Checkout Repository
     uses: actions/checkout@v4
-
   - name: Setup Python
     uses: actions/setup-python@v5
     with:
       python-version: "3.11"
-
   - name: Install Dependencies
     run: |
       pip install requests yfinance pandas
-
   - name: Run Third Eye Engine
     env:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
