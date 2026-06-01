@@ -1,3 +1,5 @@
+import requests
+import os
 # ---------------- MESSAGE START ----------------
 message = "👁 Third Eye Business\n\n"
 message += "🔔 Pro Market Alerts\n\n"
@@ -32,6 +34,18 @@ for ex in global_exchanges:
 message += "\n🇮🇷 Iranian Exchanges:\n"
 for ex in iran_exchanges:
     message += f"• {ex} 🟡 Local Market\n"
-# ---------------- MARKET SUMMARY PLACEHOLDER ----------------
+# ---------------- MARKET SUMMARY ----------------
 message += "\n\n🔔 MARKET SUMMARY\n"
 message += "AI analysis will be displayed here.\n"
+# ---------------- TELEGRAM SEND ----------------
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+response = requests.post(
+    f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
+    data={
+        "chat_id": CHAT_ID,
+        "text": message
+    }
+)
+print("Status Code:", response.status_code)
+print("Response:", response.text)
