@@ -42,26 +42,50 @@ for k, v in current_prices.items():
 os.makedirs("data", exist_ok=True)
 with open(DATA_FILE, "w") as f:
     json.dump(current_prices, f)
-# ---------------- ANALYSIS ----------------
+# ---------------- AI LOGIC ----------------
+positive = sum(1 for x in changes.values() if x > 0)
+negative = sum(1 for x in changes.values() if x < 0)
+flat = len(changes) - positive - negative
+# Trend Strength
+if positive >= 6:
+    trend = "🟢 Strong Bullish Market"
+elif positive >= 4:
+    trend = "🟡 Mild Bullish Market"
+elif negative >= 6:
+    trend = "🔴 Strong Bearish Market"
+elif negative >= 4:
+    trend = "🟠 Mild Bearish Market"
+else:
+    trend = "⚪ Neutral Market"
+# Risk Level
+volatility = sum(abs(x) for x in changes.values()) / len(changes)
+if volatility > 2:
+    risk = "🔴 High Risk"
+elif volatility > 1:
+    risk = "🟡 Medium Risk"
+else:
+    risk = "🟢 Low Risk"
+# AI Summary
+if positive > negative:
+    summary = "Markets are showing overall upward momentum with selective strength in risk assets."
+elif negative > positive:
+    summary = "Market sentiment is weak with pressure across multiple asset classes."
+else:
+    summary = "Markets are balanced with no clear directional bias."
+# ---------------- BEST / WORST ----------------
 best = max(changes, key=changes.get)
 worst = min(changes, key=changes.get)
-# AI Insight (simple but powerful)
-bullish = sum(1 for x in changes.values() if x > 0)
-bearish = sum(1 for x in changes.values() if x < 0)
-if bullish > bearish:
-    sentiment = "🟢 Market is Bullish"
-elif bearish > bullish:
-    sentiment = "🔴 Market is Bearish"
-else:
-    sentiment = "🟡 Market is Neutral"
 # ---------------- MESSAGE ----------------
 message = "👁 Third Eye Business\n\n"
-message += "📊 Global Market Dashboard\n\n"
+message += "🧠 AI Market Intelligence Report\n\n"
+message += f"{trend}\n"
+message += f"⚠️ Risk Level: {risk}\n\n"
+message += "📊 Assets:\n"
 for a in assets:
     message += f"{a}: {current_prices[a]:.2f} ({changes[a]:+.2f}%)\n"
-message += "\n🏆 Top Gainer: " + best
-message += "\n📉 Top Loser: " + worst
-message += "\n\n🧠 AI Insight:\n" + sentiment
+message += f"\n🏆 Top Gainer: {best}"
+message += f"\n📉 Top Loser: {worst}\n"
+message += "\n🧠 AI Summary:\n" + summary
 # ---------------- SEND ----------------
 requests.post(
     f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
