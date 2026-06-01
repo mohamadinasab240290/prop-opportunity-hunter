@@ -1,67 +1,32 @@
-import requests
-import json
-import os
-BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
-DATA_FILE = "data/prices.json"
-# ---------------- IRAN DATA ----------------
-def get_iran():
-    try:
-        url = "https://brsapi.ir/Api/Indices.php?type=1"
-        data = requests.get(url, timeout=10).json()
-        return {
-            "index": float(data["index"]),
-            "change": float(data["index_change_percent"])
-        }
-    except:
-        return {"index": 0, "change": 0}
-iran = get_iran()
-# ---------------- GLOBAL DATA ----------------
-symbols = {
-    "BTC": "BTC-USD",
-    "GOLD": "GC=F",
-    "OIL": "BZ=F"
-}
-global_changes = {}
-for k, v in symbols.items():
-    try:
-        r = requests.get(f"https://query1.finance.yahoo.com/v8/finance/chart/{v}")
-        price = r.json()["chart"]["result"][0]["meta"]["regularMarketPrice"]
-        # fake change calc (simple momentum proxy)
-        prev = 100
-        change = ((price - prev) / prev) * 100
-        global_changes[k] = round(change, 2)
-    except:
-        global_changes[k] = 0
-# ---------------- ALERTS ----------------
-alerts = []
-# IRAN ALERT
-if iran["change"] >= 1.5:
-    alerts.append(f"🇮🇷 🚀 Iran Market Strong Bullish ({iran['change']}%)")
-elif iran["change"] <= -1.5:
-    alerts.append(f"🇮🇷 ⚠️ Iran Market Strong Bearish ({iran['change']}%)")
-# GLOBAL ALERT
-for k, v in global_changes.items():
-    if v >= 2:
-        alerts.append(f"🌍 🚀 {k} Strong Rise (+{v}%)")
-    elif v <= -2:
-        alerts.append(f"🌍 ⚠️ {k} Strong Drop ({v}%)")
-# MARKET SYNC
-if iran["change"] > 1 and any(v > 1 for v in global_changes.values()):
-    alerts.append("🚨 Global + Iran Market Moving Together (Risk-On Mode)")
-elif iran["change"] < -1 and any(v < -1 for v in global_changes.values()):
-    alerts.append("🚨 Global + Iran Market Falling Together (Risk-Off Mode)")
-# ---------------- MESSAGE ----------------
-message = "👁 Third Eye Business\n\n"
-message += "🔔 Pro Market Alerts\n\n"
-if alerts:
-    message += "\n".join(alerts)
-else:
-    message += "🟡 No strong signals detected"
-message += f"\n\n🇮🇷 Iran Change: {iran['change']}%"
-# ---------------- SEND ----------------
-requests.post(
-    f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
-    data={"chat_id": CHAT_ID, "text": message}
-)
-print("DONE")
+# ---------------- PROP BONUSES & COMPETITIONS ----------------
+def get_prop_opportunities():
+    opportunities = []
+    # 🏆 Free competitions (sample + real-world style)
+    competitions = [
+        "🏆 Demo Trading Contest - TabTrade x BestPropFirms (Free Entry, Prize Pool $13,000)",
+        "🏆 Prop Challenge Leaderboard Contest - Top 50 get funded vouchers",
+        "🏆 Monthly Free Evaluation Challenges (various prop firms)"
+    ]
+    # 🎁 Bonuses & promos
+    bonuses = [
+        "🎁 The5ers - Discount + Free Account after payout (promo active)",
+        "🎁 BrightFunded - 15% OFF + reward account after challenge",
+        "🎁 Blue Guardian - 35% OFF + refund rewards",
+        "🎁 Funding Pips - periodic discount codes + promos",
+        "🎁 FX brokers - occasional No Deposit Bonus offers (region dependent)"
+    ]
+    # 💼 Free funded opportunities
+    funded = [
+        "💼 Some prop firms offer FREE trial funded accounts (limited seats)",
+        "💼 Affiliate programs with free starter accounts ($1000 - $10k)",
+        "💼 Demo-to-funded conversion competitions"
+    ]
+    opportunities.extend(competitions)
+    opportunities.extend(bonuses)
+    opportunities.extend(funded)
+    return opportunities
+prop_opps = get_prop_opportunities()
+# ---------------- ADD TO MESSAGE ----------------
+message += "\n\n💼 PROP OPPORTUNITIES\n"
+for opp in prop_opps:
+    message += f"{opp}\n"
